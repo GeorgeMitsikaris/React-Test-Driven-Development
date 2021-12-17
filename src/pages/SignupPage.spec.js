@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import SignupPage from "./SignupPage";
+import axios from "axios";
 
 describe("The signup page", () => {
 	describe("Layout", () => {
@@ -8,33 +9,33 @@ describe("The signup page", () => {
 			render(<SignupPage />);
 			const header = screen.queryByRole("heading", { name: "Sign Up" });
 			expect(header).toBeInTheDocument();
-    });
-    
-    it('has username input', () => {
-      render(<SignupPage />);
-      const input = screen.getByLabelText('Username');
-      expect(input).toBeInTheDocument();
-    })
-    
-    it("has email input", () => {
+		});
+
+		it("has username input", () => {
+			render(<SignupPage />);
+			const input = screen.getByLabelText("Username");
+			expect(input).toBeInTheDocument();
+		});
+
+		it("has email input", () => {
 			render(<SignupPage />);
 			const input = screen.getByLabelText("Email");
 			expect(input).toBeInTheDocument();
 		});
-    
-    it("has password input", () => {
+
+		it("has password input", () => {
 			render(<SignupPage />);
 			const input = screen.getByLabelText("Password");
 			expect(input).toBeInTheDocument();
 		});
-    
-    it("has password type for password input", () => {
+
+		it("has password type for password input", () => {
 			render(<SignupPage />);
 			const input = screen.getByLabelText("Password");
-			expect(input.type).toBe('password');
+			expect(input.type).toBe("password");
 		});
-    
-    it("has password repeat input", () => {
+
+		it("has password repeat input", () => {
 			render(<SignupPage />);
 			const input = screen.getByLabelText("Repeat Password");
 			expect(input).toBeInTheDocument();
@@ -44,30 +45,53 @@ describe("The signup page", () => {
 			render(<SignupPage />);
 			const input = screen.getByLabelText("Repeat Password");
 			expect(input.type).toBe("password");
-    });
-    
-    it('has sign up button', () => {
-      render(<SignupPage />);
-      const signUpButton = screen.queryByRole('button', { name: 'Sign Up' });
-      expect(signUpButton).toBeInTheDocument();
-    })
-    
-    it("disables sign up button initially", () => {
+		});
+
+		it("has sign up button", () => {
+			render(<SignupPage />);
+			const signUpButton = screen.queryByRole("button", { name: "Sign Up" });
+			expect(signUpButton).toBeInTheDocument();
+		});
+
+		it("disables sign up button initially", () => {
 			render(<SignupPage />);
 			const signUpButton = screen.queryByRole("button", { name: "Sign Up" });
 			expect(signUpButton).toBeDisabled();
 		});
 	});
 
-	describe('Interactions', () => {
-		it('enables button after password and repeat password have the same value', () => {
+	describe("Interactions", () => {
+		it("enables button after password and repeat password have the same value", () => {
 			render(<SignupPage />);
-			const passwordInput = screen.getByLabelText('Password');
+			const passwordInput = screen.getByLabelText("Password");
 			const passwordRepeatInput = screen.getByLabelText("Repeat Password");
-			userEvent.type(passwordInput, 'P4ssword');
+			userEvent.type(passwordInput, "P4ssword");
 			userEvent.type(passwordRepeatInput, "P4ssword");
-			const signUpButton = screen.queryByRole('button', { name: 'Sign Up' });
+			const signUpButton = screen.queryByRole("button", { name: "Sign Up" });
 			expect(signUpButton).toBeEnabled();
-		})
-	})
+		});
+
+		it("sends username, email and password to backend after clicking the button", () => {
+			render(<SignupPage />);
+			const usernameInput = screen.getByLabelText("Username");
+			const emailInput = screen.getByLabelText("Email");
+			const passwordInput = screen.getByLabelText("Password");
+			const passwordRepeatInput = screen.getByLabelText("Repeat Password");
+			userEvent.type(usernameInput, "user1");
+			userEvent.type(emailInput, "user1@mail.com");
+			userEvent.type(passwordInput, "P4ssword");
+			userEvent.type(passwordRepeatInput, "P4ssword");
+			const signUpButton = screen.queryByRole("button", { name: "Sign Up" });
+			const mockFn = jest.fn();
+			axios.post = mockFn;
+			userEvent.click(signUpButton);
+			const firstCallOfMockFunction = mockFn.mock.calls[0]
+			const body = firstCallOfMockFunction[1];
+			expect(body).toEqual({
+				username: "user1",
+				email: "user1@mail.com",
+				password: "P4ssword",
+			});
+		});
+	});
 });
