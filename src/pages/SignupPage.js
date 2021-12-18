@@ -21,6 +21,10 @@ const SignupPage = () => {
 			password,
 		};
 		axios.post("/api/1.0/users", body);
+		// fetch('/api/1.0/users', {
+		// 	method: "POST",
+		// 	body: JSON.stringify(body)
+		// })
 	};
 
 	return (
@@ -41,7 +45,7 @@ const SignupPage = () => {
 				/>
 				<label htmlFor="password">Password</label>
 				<input
-					id="password"
+					id="password" 
 					type="password"
 					value={password}
 					onChange={(e) => setPassword(e.target.value)}
