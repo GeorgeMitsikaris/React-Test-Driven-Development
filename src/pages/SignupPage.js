@@ -6,6 +6,7 @@ const SignupPage = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [repeatPassword, setRepeatPassword] = useState("");
+	const [apiProgress, setApiProgress] = useState(false);
 
 	let disabled = true;
 	if (password && repeatPassword) {
@@ -20,6 +21,7 @@ const SignupPage = () => {
 			email,
 			password,
 		};
+		setApiProgress(true);
 		axios.post("/api/1.0/users", body);
 	};
 
@@ -79,9 +81,13 @@ const SignupPage = () => {
 					<div className="text-center">
 						<button
 							className="btn btn-primary"
-							disabled={disabled}
+							disabled={disabled || apiProgress}
 							onClick={submit}
 						>
+							{apiProgress && <span
+								className="spinner-border spinner-border-sm"
+								role="status"
+							></span>}
 							Sign Up
 						</button>
 					</div>
