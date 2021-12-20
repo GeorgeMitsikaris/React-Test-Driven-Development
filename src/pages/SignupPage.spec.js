@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import SignupPage from "./SignupPage";
 import { setupServer } from "msw/node";
@@ -93,7 +93,9 @@ describe("The signup page", () => {
 			setup();
 			userEvent.click(signUpButton);
 
-			await new Promise((res) => setTimeout(res, 500));
+			await screen.findByText(
+				"Please check your email to activate your account"
+			);
 
 			expect(requestBody).toEqual({
 				username: "user1",
@@ -117,6 +119,9 @@ describe("The signup page", () => {
 
 			await new Promise((res) => setTimeout(res, 500));
 
+			await screen.findByText(
+				"Please check your email to activate your account"
+			);
 			expect(counter).toBe(1);
 		});
 
@@ -134,6 +139,39 @@ describe("The signup page", () => {
 
 			const spinner = screen.getByRole('status');
 			expect(spinner).toBeInTheDocument();
+			await screen.findByText(
+				"Please check your email to activate your account"
+			);
 		}); 
+
+		it("displays account activation notification after successful sign up request", async () => {
+			const server = setupServer(
+				rest.post("/api/1.0/users", (req, res, ctx) => {
+					return res(ctx.status(200));
+				})
+			);
+			server.listen();
+			setup();
+			const message = 'Please check your email to activate your account';
+			expect(screen.queryByText(message)).not.toBeInTheDocument(); 
+			userEvent.click(signUpButton);
+			const text = await screen.findByText(message);
+			expect(text).toBeInTheDocument();
+		});  
+
+		it ('hides the form after successful sign up request', async () => {
+			const server = setupServer(
+				rest.post("/api/1.0/users", (req, res, ctx) => {
+					return res(ctx.status(200));
+				})
+			);
+			server.listen();
+			setup();
+			const form = screen.getByTestId('form-sign-up');
+			userEvent.click(signUpButton);
+		  await	waitFor(() => {
+				expect(form).not.toBeInTheDocument();
+			})
+		})
 	});
 });
