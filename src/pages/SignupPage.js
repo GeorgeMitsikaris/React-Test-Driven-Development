@@ -14,7 +14,7 @@ const SignupPage = () => {
 		disabled = password !== repeatPassword;
 	}
 
-	const submit = (e) => {
+	const submit = async (e) => {
 		e.preventDefault();
 		const body = {
 			username,
@@ -22,13 +22,12 @@ const SignupPage = () => {
 			password,
 		};
 		setApiProgress(true);
-		axios.post("/api/1.0/users", body)
-			.then(() => {
-				setSignUpSuccess(true)	
-			})
-			.catch(error => {
-				setSignUpSuccess(false);
-		})
+		try {
+			await axios.post("/api/1.0/users", body)
+			setSignUpSuccess(true)				
+		} catch (error) {
+			setSignUpSuccess(false);			
+		} 
 	};
 
 	return (

@@ -62,7 +62,22 @@ describe("The signup page", () => {
 	});
 
 	describe("Interactions", () => {
+		let requestBody;
+		let counter = 0;
+		const server = setupServer(
+			rest.post("/api/1.0/users", (req, res, ctx) => {
+				requestBody = req.body;
+				counter += 1;
+				return res(ctx.status(200));
+			})
+		);
+
+		beforeEach(() => counter = 0)
+		beforeAll(() => server.listen());
+		afterAll(() => server.close());
+
 		let signUpButton;
+
 		const setup = () => {
 			render(<SignupPage />);
 			const usernameInput = screen.getByLabelText("Username");
@@ -82,14 +97,7 @@ describe("The signup page", () => {
 		});
 
 		it("sends username, email and password to backend after clicking the button", async () => {
-			let requestBody;
-			const server = setupServer(
-				rest.post("/api/1.0/users", (req, res, ctx) => {
-					requestBody = req.body;
-					return res(ctx.status(200));
-				})
-			);
-			server.listen();
+			
 			setup();
 			userEvent.click(signUpButton);
 
@@ -105,14 +113,7 @@ describe("The signup page", () => {
 		});
 
 		it("disables the button when a request is going on", async () => {
-			let counter = 0;
-			const server = setupServer(
-				rest.post("/api/1.0/users", (req, res, ctx) => {
-					counter++;
-					return res(ctx.status(200));
-				})
-			);
-			server.listen();
+			
 			setup();
 			userEvent.click(signUpButton);
 			userEvent.click(signUpButton);
@@ -126,12 +127,7 @@ describe("The signup page", () => {
 		});
 
 		it("displays a spinner after clicking the submit button", async () => {
-			const server = setupServer(
-				rest.post("/api/1.0/users", (req, res, ctx) => {
-					return res(ctx.status(200));
-				})
-			);
-			server.listen();
+		
 			setup();
 			expect(screen.queryByRole('status')).not.toBeInTheDocument();
 
@@ -145,12 +141,7 @@ describe("The signup page", () => {
 		}); 
 
 		it("displays account activation notification after successful sign up request", async () => {
-			const server = setupServer(
-				rest.post("/api/1.0/users", (req, res, ctx) => {
-					return res(ctx.status(200));
-				})
-			);
-			server.listen();
+			
 			setup();
 			const message = 'Please check your email to activate your account';
 			expect(screen.queryByText(message)).not.toBeInTheDocument(); 
@@ -160,12 +151,7 @@ describe("The signup page", () => {
 		});  
 
 		it ('hides the form after successful sign up request', async () => {
-			const server = setupServer(
-				rest.post("/api/1.0/users", (req, res, ctx) => {
-					return res(ctx.status(200));
-				})
-			);
-			server.listen();
+		
 			setup();
 			const form = screen.getByTestId('form-sign-up');
 			userEvent.click(signUpButton);
