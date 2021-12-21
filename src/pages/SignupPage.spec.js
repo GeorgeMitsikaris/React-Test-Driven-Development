@@ -72,7 +72,7 @@ describe("The signup page", () => {
 			})
 		);
 
-		beforeEach(() => counter = 0)
+		beforeEach(() => (counter = 0));
 		beforeAll(() => server.listen());
 		afterAll(() => server.close());
 
@@ -93,11 +93,10 @@ describe("The signup page", () => {
 
 		it("enables button after password and repeat password have the same value", () => {
 			setup();
-			expect(signUpButton).toBeEnabled(); 
+			expect(signUpButton).toBeEnabled();
 		});
 
 		it("sends username, email and password to backend after clicking the button", async () => {
-			
 			setup();
 			userEvent.click(signUpButton);
 
@@ -113,7 +112,6 @@ describe("The signup page", () => {
 		});
 
 		it("disables the button when a request is going on", async () => {
-			
 			setup();
 			userEvent.click(signUpButton);
 			userEvent.click(signUpButton);
@@ -127,37 +125,55 @@ describe("The signup page", () => {
 		});
 
 		it("displays a spinner after clicking the submit button", async () => {
-		
 			setup();
-			expect(screen.queryByRole('status')).not.toBeInTheDocument();
+			expect(screen.queryByRole("status")).not.toBeInTheDocument();
 
 			userEvent.click(signUpButton);
 
-			const spinner = screen.getByRole('status');
+			const spinner = screen.getByRole("status");
 			expect(spinner).toBeInTheDocument();
 			await screen.findByText(
 				"Please check your email to activate your account"
 			);
-		}); 
+		});
 
 		it("displays account activation notification after successful sign up request", async () => {
-			
 			setup();
-			const message = 'Please check your email to activate your account';
-			expect(screen.queryByText(message)).not.toBeInTheDocument(); 
+			const message = "Please check your email to activate your account";
+			expect(screen.queryByText(message)).not.toBeInTheDocument();
 			userEvent.click(signUpButton);
 			const text = await screen.findByText(message);
 			expect(text).toBeInTheDocument();
-		});  
+		});
 
-		it ('hides the form after successful sign up request', async () => {
-		
+		it("hides the form after successful sign up request", async () => {
 			setup();
-			const form = screen.getByTestId('form-sign-up');
+			const form = screen.getByTestId("form-sign-up");
 			userEvent.click(signUpButton);
-		  await	waitFor(() => {
+			await waitFor(() => {
 				expect(form).not.toBeInTheDocument();
-			})
-		})
+			});
+		});
+
+		it("displays validation message for username and password", async () => {
+			server.use(
+				rest.post("/api/1.0/users", (req, res, ctx) => {
+					return res(
+						ctx.status(400),
+						ctx.json({
+							validationErrors: {
+								username: "Username cannot be null",
+							},
+						})
+					);
+				})
+			);
+			setup();
+			userEvent.click(signUpButton);
+			const validationError = await screen.findByText(
+				"Username cannot be null"
+			);
+			expect(validationError).toBeInTheDocument();
+		});
 	});
 });

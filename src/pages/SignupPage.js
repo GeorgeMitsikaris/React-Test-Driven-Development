@@ -8,6 +8,7 @@ const SignupPage = () => {
 	const [repeatPassword, setRepeatPassword] = useState("");
 	const [apiProgress, setApiProgress] = useState(false);
 	const [signUpSuccess, setSignUpSuccess] = useState(false);
+	const [errors, setErrors] = useState({});
 
 	let disabled = true;
 	if (password && repeatPassword) {
@@ -27,6 +28,9 @@ const SignupPage = () => {
 			setSignUpSuccess(true)				
 		} catch (error) {
 			setSignUpSuccess(false);			
+			if (error.response.status === 400) {
+				setErrors(error.response.data.validationErrors);
+			}
 		} 
 	};
 
@@ -47,6 +51,7 @@ const SignupPage = () => {
 							value={username}
 							onChange={(e) => setUsername(e.target.value)}
 						/>
+						<div>{ errors.username }</div>
 					</div>
 					<div className="mb-3">
 						<label className="form-label" htmlFor="email">
