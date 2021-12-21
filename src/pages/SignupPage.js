@@ -27,7 +27,8 @@ const SignupPage = () => {
 			await axios.post("/api/1.0/users", body)
 			setSignUpSuccess(true)				
 		} catch (error) {
-			setSignUpSuccess(false);			
+			setSignUpSuccess(false);		
+			setApiProgress(false); 
 			if (error.response.status === 400) {
 				setErrors(error.response.data.validationErrors);
 			}

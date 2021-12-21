@@ -175,5 +175,25 @@ describe("The signup page", () => {
 			);
 			expect(validationError).toBeInTheDocument();
 		});
+
+		it('disables spinner and enables button when response received', async () => {
+			server.use(
+				rest.post('/api/1.0/users', (req, res, ctx) => {
+					return res(
+						ctx.status(400),
+						ctx.json({
+							validationErrors: {
+								username: "Username cannot be null",
+							},
+						})
+					);
+				})
+			);
+			setup();
+			userEvent.click(signUpButton);
+			await screen.findByText("Username cannot be null");
+			expect(screen.queryByRole('status')).not.toBeInTheDocument();
+			expect(signUpButton).toBeEnabled();
+		})
 	});
 });
