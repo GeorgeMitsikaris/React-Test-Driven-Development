@@ -72,7 +72,10 @@ describe("The signup page", () => {
 			})
 		);
 
-		beforeEach(() => (counter = 0));
+		beforeEach(() => {
+			counter = 0;
+			server.resetHandlers();
+		});
 		beforeAll(() => server.listen());
 		afterAll(() => server.close());
 
@@ -99,7 +102,7 @@ describe("The signup page", () => {
 		it("sends username, email and password to backend after clicking the button", async () => {
 			setup();
 			userEvent.click(signUpButton);
-
+ 
 			await screen.findByText(
 				"Please check your email to activate your account"
 			);
@@ -116,11 +119,10 @@ describe("The signup page", () => {
 			userEvent.click(signUpButton);
 			userEvent.click(signUpButton);
 
-			await new Promise((res) => setTimeout(res, 500));
-
 			await screen.findByText(
 				"Please check your email to activate your account"
-			);
+			); 
+ 
 			expect(counter).toBe(1);
 		});
 
@@ -135,14 +137,14 @@ describe("The signup page", () => {
 			await screen.findByText(
 				"Please check your email to activate your account"
 			);
-		});
+		}); 
 
 		it("displays account activation notification after successful sign up request", async () => {
 			setup();
 			const message = "Please check your email to activate your account";
 			expect(screen.queryByText(message)).not.toBeInTheDocument();
 			userEvent.click(signUpButton);
-			const text = await screen.findByText(message);
+			const text = await screen.findByText(message); 
 			expect(text).toBeInTheDocument();
 		});
 
@@ -160,7 +162,7 @@ describe("The signup page", () => {
 				rest.post("/api/1.0/users", (req, res, ctx) => {
 					return res(
 						ctx.status(400),
-						ctx.json({
+						ctx.json({  
 							validationErrors: {
 								username: "Username cannot be null",
 							},
@@ -173,12 +175,13 @@ describe("The signup page", () => {
 			const validationError = await screen.findByText(
 				"Username cannot be null"
 			);
+
 			expect(validationError).toBeInTheDocument();
 		});
 
-		it('disables spinner and enables button when response received', async () => {
+		it("disables spinner and enables button when response received", async () => {
 			server.use(
-				rest.post('/api/1.0/users', (req, res, ctx) => {
+				rest.post("/api/1.0/users", (req, res, ctx) => {
 					return res(
 						ctx.status(400),
 						ctx.json({
@@ -192,8 +195,8 @@ describe("The signup page", () => {
 			setup();
 			userEvent.click(signUpButton);
 			await screen.findByText("Username cannot be null");
-			expect(screen.queryByRole('status')).not.toBeInTheDocument();
+			expect(screen.queryByRole("status")).not.toBeInTheDocument();
 			expect(signUpButton).toBeEnabled();
-		})
-	});
+		});
+	}); 
 });

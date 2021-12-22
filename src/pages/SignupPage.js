@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import Input from "../components/Input";
 
 const SignupPage = () => {
 	const [username, setUsername] = useState("");
@@ -35,6 +36,10 @@ const SignupPage = () => {
 		} 
 	};
 
+	const usernameChangeHandler = e => {
+		setUsername(e?.target?.value);
+	}
+
 	return (
 		<div className="col-lg-6 col-md-8 offset-lg-3 offset-md-2">
 			{!signUpSuccess && <form className="card mt-5" data-testid="form-sign-up">
@@ -42,7 +47,7 @@ const SignupPage = () => {
 					<h1 className="text-center">Sign Up</h1>
 				</div>
 				<div className="card-body">
-					<div className="mb-3">
+					{/* <div className="mb-3">
 						<label className="form-label" htmlFor="username">
 							Username
 						</label>
@@ -53,7 +58,8 @@ const SignupPage = () => {
 							onChange={(e) => setUsername(e.target.value)}
 						/>
 						<div>{ errors.username }</div>
-					</div>
+					</div> */}
+					<Input id="username" label="Username" onChangeHandler={usernameChangeHandler} value={username} help={errors.username} />
 					<div className="mb-3">
 						<label className="form-label" htmlFor="email">
 							Email
