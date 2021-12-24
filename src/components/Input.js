@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Input = ({ id, label, onChangeHandler, value, help }) => {
+const Input = ({ id, label, onChangeHandler, value, help, type }) => {
 	let inputClasses = 'form-control';
 
 	if (help) {
@@ -13,6 +13,7 @@ const Input = ({ id, label, onChangeHandler, value, help }) => {
 				{label}
 			</label>
 			<input
+				type={type}
 				id={id}
 				className={inputClasses}
 				value={value}

@@ -36,83 +36,87 @@ const SignupPage = () => {
 		} 
 	};
 
+	let passwordMismatch = password !== repeatPassword ? 'Password mismatch' : '';
+
 	const usernameChangeHandler = e => {
-		setUsername(e?.target?.value);
+		setUsername(e?.target?.value); 
 	}
+
+	const emailChangeHandler = (e) => {
+		setEmail(e?.target?.value);
+	};
+
+	const passwordChangeHandler = (e) => {
+		setPassword(e?.target?.value); 
+	};
+
+	const passwordRepeatChangeHandler = (e) => {
+		setRepeatPassword(e?.target?.value);
+	};
 
 	return (
 		<div className="col-lg-6 col-md-8 offset-lg-3 offset-md-2">
-			{!signUpSuccess && <form className="card mt-5" data-testid="form-sign-up">
-				<div className="card-header">
-					<h1 className="text-center">Sign Up</h1>
-				</div>
-				<div className="card-body">
-					{/* <div className="mb-3">
-						<label className="form-label" htmlFor="username">
-							Username
-						</label>
-						<input
-							id="username"
-							className="form-control"
-							value={username}
-							onChange={(e) => setUsername(e.target.value)}
-						/>
-						<div>{ errors.username }</div>
-					</div> */}
-					<Input id="username" label="Username" onChangeHandler={usernameChangeHandler} value={username} help={errors.username} />
-					<div className="mb-3">
-						<label className="form-label" htmlFor="email">
-							Email
-						</label>
-						<input
-							className="form-control"
-							id="email"
-							value={email}
-							onChange={(e) => setEmail(e.target.value)}
-						/>
+			{!signUpSuccess && (
+				<form className="card mt-5" data-testid="form-sign-up">
+					<div className="card-header">
+						<h1 className="text-center">Sign Up</h1>
 					</div>
-					<div className="mb-3">
-						<label className="form-label" htmlFor="password">
-							Password
-						</label> 
-						<input
-							className="form-control"
+					<div className="card-body">
+						<Input
+							id="username"
+							type="text"
+							label="Username"
+							onChangeHandler={usernameChangeHandler}
+							value={username}
+							help={errors.username}
+						/>
+						<Input
+							id="email"
+							type="email"
+							label="Email"
+							onChangeHandler={emailChangeHandler}
+							value={email}
+							help={errors.email}
+						/>
+						<Input
 							id="password"
 							type="password"
+							label="Password"
+							onChangeHandler={passwordChangeHandler}
 							value={password}
-							onChange={(e) => setPassword(e.target.value)}
+							help={errors.password}
 						/>
-					</div>
-					<div className="mb-3">
-						<label className="form-label" htmlFor="passwordRepeat">
-							Repeat Password
-						</label>
-						<input
-							className="form-control"
+						<Input
 							id="passwordRepeat"
 							type="password"
+							label="Repeat Password"
+							onChangeHandler={passwordRepeatChangeHandler}
 							value={repeatPassword}
-							onChange={(e) => setRepeatPassword(e.target.value)}
-						/>
+							help={passwordMismatch} 
+						/>						
+						<div className="text-center">
+							<button
+								className="btn btn-primary"
+								disabled={disabled || apiProgress}
+								onClick={submit}
+							>
+								{apiProgress && (
+									<span
+										className="spinner-border spinner-border-sm"
+										role="status"
+									></span>
+								)}
+								Sign Up
+							</button>
+						</div>
 					</div>
-					<div className="text-center">
-						<button
-							className="btn btn-primary"
-							disabled={disabled || apiProgress}
-							onClick={submit}
-						>
-							{apiProgress && (
-								<span
-									className="spinner-border spinner-border-sm"
-									role="status"
-								></span>
-							)}
-							Sign Up
-						</button>
-					</div>
+				</form>
+			)}
+			{signUpSuccess && (
+				<div className="alert alert-success mt-3">
+					Please check your email to activate your account
 				</div>
-			</form>}
-			{signUpSuccess && <div className="alert alert-success mt-3">Please check your email to activate your account</div>}
+			)}
 		</div>
 	);
 };

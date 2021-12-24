@@ -80,13 +80,15 @@ describe("The signup page", () => {
 		afterAll(() => server.close());
 
 		let signUpButton;
+		let passwordInput;
+		let passwordRepeatInput;
 
 		const setup = () => {
 			render(<SignupPage />);
 			const usernameInput = screen.getByLabelText("Username");
 			const emailInput = screen.getByLabelText("Email");
-			const passwordInput = screen.getByLabelText("Password");
-			const passwordRepeatInput = screen.getByLabelText("Repeat Password");
+			passwordInput = screen.getByLabelText("Password");
+			passwordRepeatInput = screen.getByLabelText("Repeat Password");
 			userEvent.type(usernameInput, "user1");
 			userEvent.type(emailInput, "user1@mail.com");
 			userEvent.type(passwordInput, "P4ssword");
@@ -102,7 +104,7 @@ describe("The signup page", () => {
 		it("sends username, email and password to backend after clicking the button", async () => {
 			setup();
 			userEvent.click(signUpButton);
- 
+
 			await screen.findByText(
 				"Please check your email to activate your account"
 			);
@@ -121,8 +123,8 @@ describe("The signup page", () => {
 
 			await screen.findByText(
 				"Please check your email to activate your account"
-			); 
- 
+			);
+
 			expect(counter).toBe(1);
 		});
 
@@ -137,14 +139,14 @@ describe("The signup page", () => {
 			await screen.findByText(
 				"Please check your email to activate your account"
 			);
-		}); 
+		});
 
 		it("displays account activation notification after successful sign up request", async () => {
 			setup();
 			const message = "Please check your email to activate your account";
 			expect(screen.queryByText(message)).not.toBeInTheDocument();
 			userEvent.click(signUpButton);
-			const text = await screen.findByText(message); 
+			const text = await screen.findByText(message);
 			expect(text).toBeInTheDocument();
 		});
 
@@ -157,46 +159,51 @@ describe("The signup page", () => {
 			});
 		});
 
-		it("displays validation message for username and password", async () => {
-			server.use(
-				rest.post("/api/1.0/users", (req, res, ctx) => {
-					return res(
-						ctx.status(400),
-						ctx.json({  
-							validationErrors: {
-								username: "Username cannot be null",
-							},
-						})
-					);
-				})
-			);
-			setup();
-			userEvent.click(signUpButton);
-			const validationError = await screen.findByText(
-				"Username cannot be null"
-			);
-
-			expect(validationError).toBeInTheDocument();
-		});
-
-		it("disables spinner and enables button when response received", async () => {
+		const generateValidationMessage = (field, message) => {
 			server.use(
 				rest.post("/api/1.0/users", (req, res, ctx) => {
 					return res(
 						ctx.status(400),
 						ctx.json({
 							validationErrors: {
-								username: "Username cannot be null",
+								[field]: message,
 							},
 						})
 					);
 				})
 			);
+		};
+
+		it.each`
+			field         | message
+			${"username"} | ${"Username cannot be null"}
+			${"email"}    | ${"Email cannot be null"}
+			${"password"} | ${"Password cannot be null"}
+		`("displays $message for $field", async ({ field, message }) => {
+			generateValidationMessage(field, message);
+			setup();
+			userEvent.click(signUpButton);
+			const validationError = await screen.findByText(message);
+
+			expect(validationError).toBeInTheDocument();
+		});
+
+		it("disables spinner and enables button when response received", async () => {
+			generateValidationMessage("username", "Username cannot be null");
+
 			setup();
 			userEvent.click(signUpButton);
 			await screen.findByText("Username cannot be null");
 			expect(screen.queryByRole("status")).not.toBeInTheDocument();
 			expect(signUpButton).toBeEnabled();
 		});
-	}); 
+
+		it('displays mismatch message for password repeat input', () => {
+			setup();
+			userEvent.type(passwordInput, 'P4ssword');
+			userEvent.type(passwordRepeatInput, 'AnotherP4ssword');
+			const validationError = screen.queryByText('Password mismatch'); 
+			expect(validationError).toBeInTheDocument();
+		})
+	});
 });
