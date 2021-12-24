@@ -1,6 +1,12 @@
 import React from 'react'
 
-const Input = ({id, label, onChangeHandler, value, help}) => {
+const Input = ({ id, label, onChangeHandler, value, help }) => {
+	let inputClasses = 'form-control';
+
+	if (help) {
+		inputClasses += ' is-invalid';
+	}
+
   return (
 		<div className="mb-3">
 			<label className="form-label" htmlFor={id}>
@@ -8,13 +14,13 @@ const Input = ({id, label, onChangeHandler, value, help}) => {
 			</label>
 			<input
 				id={id}
-				className="form-control"
+				className={inputClasses}
 				value={value}
 				onChange={onChangeHandler}
 			/>
-			<div>{help}</div>
+			<span className="invalid-feedback">{help}</span>
 		</div>
 	);
 }
 
-export default Input
+export default Input;
