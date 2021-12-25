@@ -40,14 +40,17 @@ const SignupPage = () => {
 
 	const usernameChangeHandler = e => {
 		setUsername(e?.target?.value); 
+		setErrors({});
 	}
 
 	const emailChangeHandler = (e) => {
 		setEmail(e?.target?.value);
+		setErrors({});
 	};
 
 	const passwordChangeHandler = (e) => {
-		setPassword(e?.target?.value); 
+		setPassword(e?.target?.value);
+		setErrors({});
 	};
 
 	const passwordRepeatChangeHandler = (e) => {
@@ -59,7 +62,7 @@ const SignupPage = () => {
 			{!signUpSuccess && (
 				<form className="card mt-5" data-testid="form-sign-up">
 					<div className="card-header">
-						<h1 className="text-center">Sign Up</h1>
+						<h1 className="text-center">Sign Up</h1> 
 					</div>
 					<div className="card-body">
 						<Input

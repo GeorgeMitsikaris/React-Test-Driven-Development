@@ -80,13 +80,15 @@ describe("The signup page", () => {
 		afterAll(() => server.close());
 
 		let signUpButton;
+		let usernameInput;
+		let emailInput;
 		let passwordInput;
 		let passwordRepeatInput;
 
 		const setup = () => {
 			render(<SignupPage />);
-			const usernameInput = screen.getByLabelText("Username");
-			const emailInput = screen.getByLabelText("Email");
+			usernameInput = screen.getByLabelText("Username");
+			emailInput = screen.getByLabelText("Email");
 			passwordInput = screen.getByLabelText("Password");
 			passwordRepeatInput = screen.getByLabelText("Repeat Password");
 			userEvent.type(usernameInput, "user1");
@@ -188,7 +190,7 @@ describe("The signup page", () => {
 			expect(validationError).toBeInTheDocument();
 		});
 
-		it("disables spinner and enables button when response received", async () => {
+		it("hides spinner and enables button when response received", async () => {
 			generateValidationMessage("username", "Username cannot be null");
 
 			setup();
@@ -198,12 +200,30 @@ describe("The signup page", () => {
 			expect(signUpButton).toBeEnabled();
 		});
 
-		it('displays mismatch message for password repeat input', () => {
+		it("displays mismatch message for password repeat input", () => {
 			setup();
-			userEvent.type(passwordInput, 'P4ssword');
-			userEvent.type(passwordRepeatInput, 'AnotherP4ssword');
-			const validationError = screen.queryByText('Password mismatch'); 
+			userEvent.type(passwordInput, "P4ssword");
+			userEvent.type(passwordRepeatInput, "AnotherP4ssword");
+			const validationError = screen.queryByText("Password mismatch");
 			expect(validationError).toBeInTheDocument();
-		})
+		});
+
+		it.each`
+			field         | message                      | label
+			${"username"} | ${"Username cannot be null"} | ${"Username"}
+			${"email"}    | ${"Email cannot be null"}    | ${"Email"}
+			${"password"} | ${"Password cannot be null"} | ${"Password"}
+		`(
+			"clears validation error after $field is updated",
+			async ({ field, message, label }) => {
+				generateValidationMessage(field, message);
+
+				setup();
+				userEvent.click(signUpButton);
+				const validationMessage = await screen.findByText(message);
+				userEvent.type(screen.getByLabelText(label), "updated");
+				expect(validationMessage).not.toBeInTheDocument();
+			}
+		);
 	});
 });

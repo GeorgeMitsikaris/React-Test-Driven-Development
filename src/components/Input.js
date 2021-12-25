@@ -19,9 +19,9 @@ const Input = ({ id, label, onChangeHandler, value, help, type }) => {
 				value={value}
 				onChange={onChangeHandler}
 			/>
-			<span className="invalid-feedback">{help}</span>
+			{help && <span className="invalid-feedback">{help}</span>}
 		</div>
 	);
 }
-
+ 
 export default Input;
