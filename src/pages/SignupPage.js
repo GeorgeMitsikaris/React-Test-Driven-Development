@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import Input from "../components/Input";
+import { useTranslation } from "react-i18next";
 
 const SignupPage = () => {
 	const [username, setUsername] = useState("");
@@ -10,6 +11,7 @@ const SignupPage = () => {
 	const [apiProgress, setApiProgress] = useState(false);
 	const [signUpSuccess, setSignUpSuccess] = useState(false);
 	const [errors, setErrors] = useState({});
+	const { t, i18n } = useTranslation();
 
 	let disabled = true;
 	if (password && repeatPassword) {
@@ -62,13 +64,13 @@ const SignupPage = () => {
 			{!signUpSuccess && (
 				<form className="card mt-5" data-testid="form-sign-up">
 					<div className="card-header">
-						<h1 className="text-center">Sign Up</h1> 
+						<h1 className="text-center">{t("signUp")}</h1>
 					</div>
 					<div className="card-body">
 						<Input
 							id="username"
 							type="text"
-							label="Username"
+							label={t("username")}
 							onChangeHandler={usernameChangeHandler}
 							value={username}
 							help={errors.username}
@@ -76,7 +78,7 @@ const SignupPage = () => {
 						<Input
 							id="email"
 							type="email"
-							label="Email"
+							label={t("email")}
 							onChangeHandler={emailChangeHandler}
 							value={email}
 							help={errors.email}
@@ -84,7 +86,7 @@ const SignupPage = () => {
 						<Input
 							id="password"
 							type="password"
-							label="Password"
+							label={t("password")}
 							onChangeHandler={passwordChangeHandler}
 							value={password}
 							help={errors.password}
@@ -92,11 +94,11 @@ const SignupPage = () => {
 						<Input
 							id="passwordRepeat"
 							type="password"
-							label="Repeat Password"
+							label={t("passwordRepeat")}
 							onChangeHandler={passwordRepeatChangeHandler}
 							value={repeatPassword}
-							help={passwordMismatch} 
-						/>						
+							help={passwordMismatch}
+						/>
 						<div className="text-center">
 							<button
 								className="btn btn-primary"
@@ -109,7 +111,7 @@ const SignupPage = () => {
 										role="status"
 									></span>
 								)}
-								Sign Up
+								{t('signUp')}
 							</button>
 						</div>
 					</div>
