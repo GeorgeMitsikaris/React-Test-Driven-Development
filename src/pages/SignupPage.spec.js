@@ -3,7 +3,9 @@ import userEvent from "@testing-library/user-event";
 import SignupPage from "./SignupPage";
 import { setupServer } from "msw/node";
 import { rest } from "msw";
-import '../locale/i18n';
+import "../locale/i18n";
+import en from "../locale/en.json";
+import gr from "../locale/gr.json";
 
 describe("The signup page", () => {
 	describe("Layout", () => {
@@ -226,5 +228,53 @@ describe("The signup page", () => {
 				expect(validationMessage).not.toBeInTheDocument();
 			}
 		);
+	});
+
+	describe("Internationalization", () => {
+		it("initially displays all text in English", () => {
+			render(<SignupPage />);
+			expect(
+				screen.getByRole("heading", { name: en.signUp })
+			).toBeInTheDocument();
+			expect(
+				screen.getByRole("button", { name: en.signUp })
+			).toBeInTheDocument();
+			expect(screen.getByLabelText(en.username)).toBeInTheDocument();
+			expect(screen.getByLabelText(en.email)).toBeInTheDocument();
+			expect(screen.getByLabelText(en.password)).toBeInTheDocument();
+			expect(screen.getByLabelText(en.passwordRepeat)).toBeInTheDocument();
+		});
+
+		it("displays all text in Greek after language is changed to Greek", () => {
+			render(<SignupPage />);
+			const greekToggle = screen.getByTitle("Ελληνικά");
+			userEvent.click(greekToggle);
+			expect(
+				screen.getByRole("heading", { name: gr.signUp })
+			).toBeInTheDocument();
+			expect(
+				screen.getByRole("button", { name: gr.signUp })
+			).toBeInTheDocument();
+			expect(screen.getByLabelText(gr.username)).toBeInTheDocument();
+			expect(screen.getByLabelText(gr.email)).toBeInTheDocument();
+			expect(screen.getByLabelText(gr.password)).toBeInTheDocument();
+			expect(screen.getByLabelText(gr.passwordRepeat)).toBeInTheDocument();
+		});
+
+		it("displays all text in English after language is changed back to English", () => {
+			render(<SignupPage />);
+			const englishToggle = screen.getByTitle("English");
+			userEvent.click(englishToggle);
+			expect(
+				screen.getByRole("heading", { name: en.signUp })
+			).toBeInTheDocument();
+			expect(
+				screen.getByRole("button", { name: en.signUp })
+			).toBeInTheDocument();
+			expect(screen.getByLabelText(en.username)).toBeInTheDocument();
+			expect(screen.getByLabelText(en.email)).toBeInTheDocument();
+			expect(screen.getByLabelText(en.password)).toBeInTheDocument();
+			expect(screen.getByLabelText(en.passwordRepeat)).toBeInTheDocument();
+		});
 	});
 });

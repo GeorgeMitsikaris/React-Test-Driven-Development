@@ -27,23 +27,23 @@ const SignupPage = () => {
 		};
 		setApiProgress(true);
 		try {
-			await axios.post("/api/1.0/users", body)
-			setSignUpSuccess(true)				
+			await axios.post("/api/1.0/users", body);
+			setSignUpSuccess(true);
 		} catch (error) {
-			setSignUpSuccess(false);		
-			setApiProgress(false); 
+			setSignUpSuccess(false);
+			setApiProgress(false);
 			if (error.response.status === 400) {
 				setErrors(error.response.data.validationErrors);
 			}
-		} 
+		}
 	};
 
-	let passwordMismatch = password !== repeatPassword ? 'Password mismatch' : '';
+	let passwordMismatch = password !== repeatPassword ? "Password mismatch" : "";
 
-	const usernameChangeHandler = e => {
-		setUsername(e?.target?.value); 
+	const usernameChangeHandler = (e) => {
+		setUsername(e?.target?.value);
 		setErrors({});
-	}
+	};
 
 	const emailChangeHandler = (e) => {
 		setEmail(e?.target?.value);
@@ -57,6 +57,14 @@ const SignupPage = () => {
 
 	const passwordRepeatChangeHandler = (e) => {
 		setRepeatPassword(e?.target?.value);
+	};
+
+	const onClickGreek = () => {
+		i18n.changeLanguage("gr");
+	};
+
+	const onClickEnglish = () => {
+		i18n.changeLanguage("en");
 	};
 
 	return (
@@ -111,7 +119,7 @@ const SignupPage = () => {
 										role="status"
 									></span>
 								)}
-								{t('signUp')}
+								{t("signUp")}
 							</button>
 						</div>
 					</div>
@@ -122,6 +130,23 @@ const SignupPage = () => {
 					Please check your email to activate your account
 				</div>
 			)}
+			<img
+				className="me-3"
+				title="Ελληνικά"
+				src="https://flagcdn.com/h20/gr.png"
+				srcset="https://flagcdn.com/h40/gr.png 2x"
+				heigh="20"
+				alt="Greek flag"
+				onClick={onClickGreek}
+			></img> 
+			<img
+				title="English"
+				src="https://flagcdn.com/h20/gb.png"
+				srcset="https://flagcdn.com/h40/gb.png 2x"
+				width="40"
+				alt="English flag"
+				onClick={onClickEnglish}
+			></img>
 		</div>
 	);
 };
