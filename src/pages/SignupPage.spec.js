@@ -3,9 +3,11 @@ import userEvent from "@testing-library/user-event";
 import SignupPage from "./SignupPage";
 import { setupServer } from "msw/node";
 import { rest } from "msw";
-import "../locale/i18n";
+import i18n from "../locale/i18n";
 import en from "../locale/en.json";
 import gr from "../locale/gr.json";
+import LanguageSelector from "../components/LanguageSelector";
+import { act } from "react-dom/test-utils";
 
 describe("The signup page", () => {
 	describe("Layout", () => {
@@ -231,22 +233,23 @@ describe("The signup page", () => {
 	});
 
 	describe("Internationalization", () => {
-		it("initially displays all text in English", () => {
-			render(<SignupPage />);
-			expect(
-				screen.getByRole("heading", { name: en.signUp })
-			).toBeInTheDocument();
-			expect(
-				screen.getByRole("button", { name: en.signUp })
-			).toBeInTheDocument();
-			expect(screen.getByLabelText(en.username)).toBeInTheDocument();
-			expect(screen.getByLabelText(en.email)).toBeInTheDocument();
-			expect(screen.getByLabelText(en.password)).toBeInTheDocument();
-			expect(screen.getByLabelText(en.passwordRepeat)).toBeInTheDocument();
-		});
+		const setup = () => {
+			render(
+				<>
+					<SignupPage />
+					<LanguageSelector />
+				</>
+			);
+		};
+
+		afterEach(() => {
+			act(() => {
+				i18n.changeLanguage('en');
+			})
+		})
 
 		it("displays all text in Greek after language is changed to Greek", () => {
-			render(<SignupPage />);
+			setup();
 			const greekToggle = screen.getByTitle("Ελληνικά");
 			userEvent.click(greekToggle);
 			expect(
@@ -261,8 +264,22 @@ describe("The signup page", () => {
 			expect(screen.getByLabelText(gr.passwordRepeat)).toBeInTheDocument();
 		});
 
+		it("initially displays all text in English", () => { 
+			setup();
+			expect(
+				screen.getByRole("heading", { name: en.signUp })
+			).toBeInTheDocument();
+			expect(
+				screen.getByRole("button", { name: en.signUp })
+			).toBeInTheDocument();
+			expect(screen.getByLabelText(en.username)).toBeInTheDocument();
+			expect(screen.getByLabelText(en.email)).toBeInTheDocument();
+			expect(screen.getByLabelText(en.password)).toBeInTheDocument();
+			expect(screen.getByLabelText(en.passwordRepeat)).toBeInTheDocument();
+		});
+
 		it("displays all text in English after language is changed back to English", () => {
-			render(<SignupPage />);
+			setup();
 			const englishToggle = screen.getByTitle("English");
 			userEvent.click(englishToggle);
 			expect(

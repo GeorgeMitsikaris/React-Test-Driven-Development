@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import Input from "../components/Input";
 import { useTranslation } from "react-i18next";
+import LanguageSelector from "../components/LanguageSelector";
 
 const SignupPage = () => {
 	const [username, setUsername] = useState("");
@@ -57,14 +58,6 @@ const SignupPage = () => {
 
 	const passwordRepeatChangeHandler = (e) => {
 		setRepeatPassword(e?.target?.value);
-	};
-
-	const onClickGreek = () => {
-		i18n.changeLanguage("gr");
-	};
-
-	const onClickEnglish = () => {
-		i18n.changeLanguage("en");
 	};
 
 	return (
@@ -130,23 +123,6 @@ const SignupPage = () => {
 					Please check your email to activate your account
 				</div>
 			)}
-			<img
-				className="me-3"
-				title="Ελληνικά"
-				src="https://flagcdn.com/h20/gr.png"
-				srcset="https://flagcdn.com/h40/gr.png 2x"
-				heigh="20"
-				alt="Greek flag"
-				onClick={onClickGreek}
-			></img> 
-			<img
-				title="English"
-				src="https://flagcdn.com/h20/gb.png"
-				srcset="https://flagcdn.com/h40/gb.png 2x"
-				width="40"
-				alt="English flag"
-				onClick={onClickEnglish}
-			></img>
 		</div>
 	);
 };
