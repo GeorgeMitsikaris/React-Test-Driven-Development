@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, waitForElementToBeRemoved, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import SignupPage from "./SignupPage";
 import { setupServer } from "msw/node";
@@ -7,7 +7,26 @@ import i18n from "../locale/i18n";
 import en from "../locale/en.json";
 import gr from "../locale/gr.json";
 import LanguageSelector from "../components/LanguageSelector";
-import { act } from "react-dom/test-utils";
+// import { act } from "react-dom/test-utils";
+
+let requestBody;
+let counter = 0;
+let acceptLanguageHeader;
+const server = setupServer(
+	rest.post("/api/1.0/users", (req, res, ctx) => {
+		requestBody = req.body;
+		counter += 1;
+		acceptLanguageHeader = req.headers.get('Accept-Language');
+		return res(ctx.status(200));
+	})
+);
+
+beforeEach(() => {
+	counter = 0;
+	server.resetHandlers();
+});
+beforeAll(() => server.listen());
+afterAll(() => server.close());
 
 describe("The signup page", () => {
 	describe("Layout", () => {
@@ -67,23 +86,6 @@ describe("The signup page", () => {
 	});
 
 	describe("Interactions", () => {
-		let requestBody;
-		let counter = 0;
-		const server = setupServer(
-			rest.post("/api/1.0/users", (req, res, ctx) => {
-				requestBody = req.body;
-				counter += 1;
-				return res(ctx.status(200));
-			})
-		);
-
-		beforeEach(() => {
-			counter = 0;
-			server.resetHandlers();
-		});
-		beforeAll(() => server.listen());
-		afterAll(() => server.close());
-
 		let signUpButton;
 		let usernameInput;
 		let emailInput;
@@ -233,6 +235,7 @@ describe("The signup page", () => {
 	});
 
 	describe("Internationalization", () => {
+		let greekToggle, englishToggle, passwordInput, passwordRepeatInput;
 		const setup = () => {
 			render(
 				<>
@@ -240,6 +243,10 @@ describe("The signup page", () => {
 					<LanguageSelector />
 				</>
 			);
+			greekToggle = screen.getByTitle("Ελληνικά");
+			englishToggle = screen.getByTitle("English"); 
+			passwordInput = screen.getByLabelText("Password");
+			passwordRepeatInput = screen.getByLabelText("Repeat Password");
 		};
 
 		afterEach(() => {
@@ -250,7 +257,6 @@ describe("The signup page", () => {
 
 		it("displays all text in Greek after language is changed to Greek", () => {
 			setup();
-			const greekToggle = screen.getByTitle("Ελληνικά");
 			userEvent.click(greekToggle);
 			expect(
 				screen.getByRole("heading", { name: gr.signUp })
@@ -280,7 +286,6 @@ describe("The signup page", () => {
 
 		it("displays all text in English after language is changed back to English", () => {
 			setup();
-			const englishToggle = screen.getByTitle("English");
 			userEvent.click(englishToggle);
 			expect(
 				screen.getByRole("heading", { name: en.signUp })
@@ -292,6 +297,38 @@ describe("The signup page", () => {
 			expect(screen.getByLabelText(en.email)).toBeInTheDocument();
 			expect(screen.getByLabelText(en.password)).toBeInTheDocument();
 			expect(screen.getByLabelText(en.passwordRepeat)).toBeInTheDocument();
+		});
+
+		it("displays password mismatch validation in Greek", () => {
+			setup();
+			userEvent.click(greekToggle);
+			
+			userEvent.type(passwordInput, 'P4ss');
+			const validationMessageInGreek = screen.queryByText(gr.passwordMismatch);
+			expect(validationMessageInGreek).toBeInTheDocument();
+		});
+
+		it('sends accept language header as en for outgoing request', async () => {
+			setup();
+			userEvent.type(passwordInput, 'P4ssword');
+			userEvent.type(passwordRepeatInput, "P4ssword");
+			const button = screen.getByRole('button', { name: en.signUp });
+			const form = screen.queryByTestId('form-sign-up');
+			userEvent.click(button);
+			await waitForElementToBeRemoved(form);
+			expect(acceptLanguageHeader).toBe('en');
+		})
+
+		it("sends accept language header as gr for outgoing request after selecting that", async () => {
+			setup();
+			userEvent.type(passwordInput, "P4ssword");
+			userEvent.type(passwordRepeatInput, "P4ssword"); 
+			const button = screen.getByRole("button", { name: en.signUp });
+			userEvent.click(greekToggle); 
+			const form = screen.queryByTestId("form-sign-up");
+			userEvent.click(button);
+			await waitForElementToBeRemoved(form);
+			expect(acceptLanguageHeader).toBe("gr");
 		});
 	});
 });

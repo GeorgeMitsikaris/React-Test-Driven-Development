@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import axios from "axios";
 import Input from "../components/Input";
 import { useTranslation } from "react-i18next";
-import LanguageSelector from "../components/LanguageSelector";
 
 const SignupPage = () => {
 	const [username, setUsername] = useState("");
@@ -28,7 +27,11 @@ const SignupPage = () => {
 		};
 		setApiProgress(true);
 		try {
-			await axios.post("/api/1.0/users", body);
+			await axios.post("/api/1.0/users", body, {
+				headers: {
+					'Accept-Language': i18n.language
+				}
+			});
 			setSignUpSuccess(true);
 		} catch (error) {
 			setSignUpSuccess(false);
@@ -39,7 +42,7 @@ const SignupPage = () => {
 		}
 	};
 
-	let passwordMismatch = password !== repeatPassword ? "Password mismatch" : "";
+	let passwordMismatch = password !== repeatPassword ? t("passwordMismatch") : ""; 
 
 	const usernameChangeHandler = (e) => {
 		setUsername(e?.target?.value);

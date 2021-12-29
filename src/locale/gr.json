@@ -3,5 +3,6 @@
 	"username": "Όνομα χρήστη",
 	"email": "Email",
 	"password": "Κωδικός",
-	"passwordRepeat": "Επανάληψη κωδικού"
+	"passwordRepeat": "Επανάληψη κωδικού",
+	"passwordMismatch": "Διαφορετικός κωδικός"
 }
