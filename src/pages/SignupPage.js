@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import axios from "axios";
 import Input from "../components/Input";
 import { useTranslation } from "react-i18next";
+import { signup } from "../api/apiCalls"; 
 
 const SignupPage = () => {
 	const [username, setUsername] = useState("");
@@ -11,7 +11,7 @@ const SignupPage = () => {
 	const [apiProgress, setApiProgress] = useState(false);
 	const [signUpSuccess, setSignUpSuccess] = useState(false);
 	const [errors, setErrors] = useState({});
-	const { t, i18n } = useTranslation();
+	const { t } = useTranslation();
 
 	let disabled = true;
 	if (password && repeatPassword) {
@@ -19,19 +19,15 @@ const SignupPage = () => {
 	}
 
 	const submit = async (e) => {
-		e.preventDefault();
+		e.preventDefault(); 
 		const body = {
 			username,
 			email,
 			password,
 		};
 		setApiProgress(true);
-		try {
-			await axios.post("/api/1.0/users", body, {
-				headers: {
-					'Accept-Language': i18n.language
-				}
-			});
+		try { 
+			await signup(body); 
 			setSignUpSuccess(true);
 		} catch (error) {
 			setSignUpSuccess(false);
