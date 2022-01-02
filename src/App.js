@@ -34,7 +34,7 @@ function App() {
 				<Route path="/signup" component={SignupPage} />
 				<Route path="/login" component={LoginPage} />
 				<Route path="/user/:id" component={UserPage} />
-				<Route path="/activate/:id" component={AccountActivationPage} /> 
+				<Route path="/activate/:token" component={AccountActivationPage} /> 
 				<LanguageSelector />
 			</div>
 		</BrowserRouter>
