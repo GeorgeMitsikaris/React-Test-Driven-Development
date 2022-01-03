@@ -5,14 +5,14 @@ const AccountActivationPage = (props) => {
   const [result, setResult] = useState();
 
   useEffect(() => {
-    activate(props.match.params.token)
-      .then(() => {
-        setResult('success')
-      })
-      .catch(() => {
-        setResult('fail');
-      })
-  }, []);
+		activate(props.match?.params.token)
+			.then(() => {
+				setResult("success");
+			})
+			.catch(() => {
+				setResult("fail");
+			});
+	}, [props.match?.params.token]); 
 
 	return (
 		<div data-testid="activation-page">
