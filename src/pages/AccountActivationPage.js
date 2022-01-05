@@ -1,27 +1,38 @@
 import React, { useState, useEffect } from "react";
 import { activate } from "../api/apiCalls";
+import Alert from "../components/Alert";
+import Spinner from "../components/Spinner";
 
 const AccountActivationPage = (props) => {
   const [result, setResult] = useState();
 
-  useEffect(() => {
-		activate(props.match?.params.token)
-			.then(() => {
+	useEffect(() => {
+		const activateRequest = async () => {			
+			setResult('');
+			try {
+				await activate(props.match?.params.token)
 				setResult("success");
-			})
-			.catch(() => {
-				setResult("fail");
-			});
+			} catch (err) {
+				setResult("fail");	 			
+			} 
+		}
+		activateRequest() 
 	}, [props.match?.params.token]); 
 
+	let content = (
+		<Alert type="secondary" center>
+			<Spinner size='big' />
+		</Alert>
+	)
+	if (result === "success") {
+		content = <Alert>Account is activated</Alert>;
+	} else if (result === "fail") {		
+		content = <Alert type="danger">Activation failure</Alert>;
+	}
+
 	return (
-		<div data-testid="activation-page">
-			{result === "success" && (
-				<div className="alert alert-success mt-3">Account is activated</div>
-			)}
-			{result === "fail" && (
-				<div className="alert alert-danger mt-3">Activation failure</div>
-			)}
+		<div data-testid="activation-page"> 
+			{content}
 		</div>
 	);
 };

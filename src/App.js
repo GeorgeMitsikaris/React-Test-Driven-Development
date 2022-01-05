@@ -29,12 +29,12 @@ function App() {
 					</ul>
 				</div>
 			</nav>
-			<div className="container">
+			<div className="container pt-3">
 				<Route path="/" exact component={HomePage} />
 				<Route path="/signup" component={SignupPage} />
 				<Route path="/login" component={LoginPage} />
 				<Route path="/user/:id" component={UserPage} />
-				<Route path="/activate/:token" component={AccountActivationPage} /> 
+				<Route path="/activate/:token" component={AccountActivationPage} />
 				<LanguageSelector />
 			</div>
 		</BrowserRouter>

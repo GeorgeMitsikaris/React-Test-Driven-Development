@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import Input from "../components/Input";
 import { useTranslation } from "react-i18next";
 import { signup } from "../api/apiCalls"; 
+import Alert from "../components/Alert";
+import Spinner from "../components/Spinner";
 
 const SignupPage = () => {
 	const [username, setUsername] = useState("");
@@ -65,7 +67,7 @@ const SignupPage = () => {
 			data-testid="signup-page"
 		>
 			{!signUpSuccess && (
-				<form className="card mt-5" data-testid="form-sign-up">
+				<form className="card" data-testid="form-sign-up">
 					<div className="card-header">
 						<h1 className="text-center">{t("signUp")}</h1>
 					</div>
@@ -109,10 +111,7 @@ const SignupPage = () => {
 								onClick={submit}
 							>
 								{apiProgress && (
-									<span
-										className="spinner-border spinner-border-sm"
-										role="status"
-									></span>
+									<Spinner />
 								)}
 								{t("signUp")}
 							</button>
@@ -121,9 +120,7 @@ const SignupPage = () => {
 				</form>
 			)}
 			{signUpSuccess && (
-				<div className="alert alert-success mt-3">
-					Please check your email to activate your account
-				</div>
+				<Alert> Please check your email to activate your account</Alert>					
 			)}
 		</div>
 	);
