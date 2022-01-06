@@ -1,9 +1,10 @@
 import React from 'react'
+import UserLIst from '../components/UserLIst'
 
 const HomePage = () => {
   return (
     <div data-testid='home-page'>
-      <h1>Home Page</h1>      
+      <UserLIst />
     </div>
   )
 }
